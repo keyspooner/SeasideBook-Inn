@@ -16,7 +16,9 @@ MiniInn class >> initialize [
 	|application|
 	application := WAAdmin register: self asApplicationAt: 'miniInn'.
 	application preferenceAt: #sessionClass put: InnSession.
-
+	application 
+		addLibrary: JQDeploymentLibrary;
+	 	addLibrary: JQUiDeploymentLibrary
 ]
 
 { #category : #accessing }
@@ -54,6 +56,17 @@ MiniInn >> endDate: anObject [
 	endDate := anObject
 ]
 
+{ #category : #updating }
+MiniInn >> initialRequest: aRequest [
+	super initialRequest: aRequest.
+	aRequest fields
+		at: 'startDate'
+		ifPresent: [ :value | startDate := value asDate ].
+	aRequest fields 
+		at: 'endDate'
+		ifPresent: [ :value | endDate := value asDate ].
+]
+
 { #category : #hooks }
 MiniInn >> initialize [
 	super initialize.
@@ -79,6 +92,19 @@ MiniInn >> logout [
 
 { #category : #hooks }
 MiniInn >> renderContentOn: html [
+	|id|
+	html document addLoadScript: (html javascript alert: 'hello' ).
+	html anchor 	
+			"targetBlank;"
+			url: '#';
+			onClick: (html jQuery: 'div.help') toggle;
+			with: 'About jQuery'.
+	html div 	
+		class: 'help';
+		style: 'display: none';
+		with: 'jQuery is a fast and ...'.
+	html break.
+	
 	self renderLogin: html.
 	html heading: 'Starting Date'.
 	html render: calendar1.
@@ -94,6 +120,8 @@ MiniInn >> renderContentOn: html [
 				' days from ' , startDate asString , ' to ' ,
 				endDate asString , ' '
 			 ].
+	html break.
+	html break.
 	(self session isLoggedIn)
 		ifTrue: [ self renderSpecialPrice: html ]
 ]
@@ -126,4 +154,13 @@ MiniInn >> startDate [
 { #category : #accessing }
 MiniInn >> startDate: anObject [
 	startDate := anObject
+]
+
+{ #category : #updating }
+MiniInn >> updateUrl: aURL [
+	super updateUrl: aURL.
+	startDate isNil
+		ifFalse: [ aURL addField: 'startDate' value: startDate ].
+	endDate isNil
+		ifFalse: [ aURL addField: 'endDate' value: endDate ]
 ]

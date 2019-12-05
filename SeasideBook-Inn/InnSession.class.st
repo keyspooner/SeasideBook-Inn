@@ -19,7 +19,8 @@ InnSession >> login: aString [
 
 { #category : #'as yet unclassified' }
 InnSession >> logout [
-	user := nil
+	user := nil.
+
 ]
 
 { #category : #'parent/child' }
