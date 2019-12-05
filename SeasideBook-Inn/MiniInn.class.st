@@ -13,7 +13,10 @@ Class {
 { #category : #'class initialization' }
 MiniInn class >> initialize [ 
 	"self initialize"
-	WAAdmin register: self asApplicationAt: 'miniInn'
+	|application|
+	application := WAAdmin register: self asApplicationAt: 'miniInn'.
+	application preferenceAt: #sessionClass put: InnSession.
+
 ]
 
 { #category : #accessing }
@@ -64,8 +67,19 @@ MiniInn >> initialize [
 		onAnswer: [ :date | endDate := date ].
 ]
 
+{ #category : #accessing }
+MiniInn >> login [
+	self session login: (self request: 'Enter your name: ')
+]
+
+{ #category : #accessing }
+MiniInn >> logout [
+	self session logout
+]
+
 { #category : #hooks }
 MiniInn >> renderContentOn: html [
+	self renderLogin: html.
 	html heading: 'Starting Date'.
 	html render: calendar1.
 	html break.
@@ -79,7 +93,29 @@ MiniInn >> renderContentOn: html [
 				html text: (endDate - startDate ) days asString ,
 				' days from ' , startDate asString , ' to ' ,
 				endDate asString , ' '
-			 ]
+			 ].
+	(self session isLoggedIn)
+		ifTrue: [ self renderSpecialPrice: html ]
+]
+
+{ #category : #accessing }
+MiniInn >> renderLogin: html [
+"	self session inspect."
+	self session isLoggedIn
+		ifTrue: [ 
+			html text: 'Logged in as: ', self session user , ' '.
+			html anchor 
+				callback: [ self logout ];
+				with: 'Logout' ]
+		ifFalse: [ 
+			html anchor 
+				callback: [ self login ];
+				with: 'Login' ]
+]
+
+{ #category : #accessing }
+MiniInn >> renderSpecialPrice: html [
+	html text: 'Dear ' , self session user , ', you can benefit from our special prices!'
 ]
 
 { #category : #accessing }

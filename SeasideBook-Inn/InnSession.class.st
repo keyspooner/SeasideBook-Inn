@@ -22,6 +22,12 @@ InnSession >> logout [
 	user := nil
 ]
 
+{ #category : #'parent/child' }
+InnSession >> unregistered [
+	super unregistered.
+	user := nil
+]
+
 { #category : #'as yet unclassified' }
 InnSession >> user [
 	^ user
