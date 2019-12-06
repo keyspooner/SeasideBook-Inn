@@ -92,8 +92,8 @@ MiniInn >> logout [
 
 { #category : #hooks }
 MiniInn >> renderContentOn: html [
-	|id|
 	html document addLoadScript: (html javascript alert: 'hello' ).
+
 	html anchor 	
 			"targetBlank;"
 			url: '#';
